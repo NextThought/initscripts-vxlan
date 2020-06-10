@@ -13,13 +13,32 @@ need_config ${CONFIG}
 
 source_config
 
-/etc/sysconfig/network-scripts/ifup ${PHYS_DEV}
+if [ -z "$PHYS_DEV" ]
+then
+    ip link add ${DEVICE} type vxlan \
+        id ${VNI} \
+        dstport ${DSTPORT:-4789} \
+        local ${LOCAL_ADDR} \
+        ttl ${ttl:-255} \
 
-ip link add ${DEVICE} type vxlan \
-    id ${VNI} \
-    dstport ${DSTPORT:-4789} \
-    local ${LOCAL_ADDR} \
-    ttl ${ttl:-255} \
-    dev ${PHYS_DEV} ${OPTIONS}
+    for VTEP in ${REMOTE_VTEPS}
+    do
+       bridge fdb append 00:00:00:00:00:00 dev ${DEVICE} dst ${VTEP}
+    done
+else
+    /etc/sysconfig/network-scripts/ifup ${PHYS_DEV}
+
+    ip link add ${DEVICE} type vxlan \
+        id ${VNI} \
+        dstport ${DSTPORT:-4789} \
+        local ${LOCAL_ADDR} \
+        ttl ${ttl:-255} \
+        dev ${PHYS_DEV} ${OPTIONS}
+
+    for VTEP in ${REMOTE_VTEPS}
+    do
+       bridge fdb append 00:00:00:00:00:00 dev ${DEVICE} dst ${VTEP}
+    done
+fi
 
 /etc/sysconfig/network-scripts/ifup-eth ${DEVICE}
