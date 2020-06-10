@@ -2,7 +2,7 @@ Name:		initscripts-vxlan
 Version:	0.2
 Release:	1%{?dist}
 Summary:	vxlan ifup/down scripts
-Packager:       Eugene Paniot <e.paniot@gmail.com>
+Packager:       Sean Jones <sean.jones@nextthought.com>
 Group:		System Environment/Base
 License:	GPLv2 and GPLv2+
 URL:		https://github.com/NextThought/initscripts-vxlan
